@@ -55,13 +55,24 @@ function CreateStore() {
     }
   };
 
-  const handleSubmit = (event: any) => {
-    console.log("Before form submission");
+  const handleSubmit = async (event:any) => {
     event.preventDefault();
-    console.log("After preventDefault");
-    console.log(formData.shopDescription);
+    try {
+      const response = await fetch("/api/create-store", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to create store");
+      }
+      // Handle successful response
+    } catch (error:any) {
+      console.error("Error creating store:", error.message);
+    }
   };
-  
 
   return (
     <div className="shadow-md pt-10 pl-6 pr-6">

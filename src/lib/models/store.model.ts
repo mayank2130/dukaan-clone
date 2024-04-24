@@ -22,20 +22,20 @@ export interface IStore extends Document {
 const storeSchema = new Schema<IStore>({
   clerkUserId: {
     type: String,
-    required: true,
+    // required: true,
     unique: true,
   },
   shopName: {
     type: String,
-    required: true,
+    // required: true,
   },
   gstinNum: {
     type: String,
-    required: true,
+    // required: true,
   },
   openingDate: {
     type: String,
-    required: true,
+    // required: true,
   },
   openCloseTime: {
     type: String,
@@ -43,7 +43,7 @@ const storeSchema = new Schema<IStore>({
   },
   shopAddress: {
     type: String,
-    required: true,
+    // required: true,
   },
   shopGeoAddress: {
     type: {
@@ -67,11 +67,11 @@ const storeSchema = new Schema<IStore>({
   },
   ownerName: {
     type: String,
-    required: true,
+    // required: true,
   },
   phoneNo: {
     type: String,
-    required: true,
+    // required: true,
   },
   createdAt: {
     type: Date,

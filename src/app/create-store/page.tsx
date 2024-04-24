@@ -4,7 +4,7 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import CreateStore from "@/components/CreateStore";
 
 export const metadata: Metadata = {
-  title: "Add new product",
+  title: "Create your Store",
 };
 
 function page() {
