@@ -1,19 +1,23 @@
+"use client";
+
 import React, { useState } from "react";
 import { Camera } from "lucide-react";
-import Variants from "@/components/Variants";
+import { Button, buttonVariants } from "./ui/button";
 
 function AddProduct() {
-
   const [formData, setFormData] = useState({
     productName: "",
-      clerkUserId: "",
-      productDescription: "",
-      gstinNum: "",
-      price: "",
-      type:"",
-      images: "",
-      sizes: "",
-      category: "",
+    clerkUserId: "",
+    productDescription: "",
+    gstinNum: "",
+    price: "",
+    discountedPrice: "",
+    type: "",
+    images: "",
+    prodSizes: { small: false, medium: false, large: false },
+    color: { red: false, blue: false, green: false },
+    variants: {},
+    prodCategory: "",
   });
 
   const handleChange = (e: any) => {
@@ -22,20 +26,33 @@ function AddProduct() {
         ...formData,
         type: e.target.id,
       });
-    }
-
-    if (
-      e.target.id === "parking" ||
-      e.target.id === "furnished" ||
-      e.target.id === "offer"
+    } else if (
+      e.target.id === "small" ||
+      e.target.id === "medium" ||
+      e.target.id === "large" ||
+      e.target.id === "red" ||
+      e.target.id === "blue" ||
+      e.target.id === "green"
     ) {
-      setFormData({
-        ...formData,
-        [e.target.id]: e.target.checked,
-      });
-    }
-
-    if (
+      if (selectedOptions.includes("prodSizes")) {
+        setFormData({
+          ...formData,
+          prodSizes: {
+            ...formData.prodSizes,
+            [e.target.id]: e.target.checked,
+          },
+        });
+      }
+      if (selectedOptions.includes("Colors")) {
+        setFormData({
+          ...formData,
+          color: {
+            ...formData.color,
+            [e.target.id]: e.target.checked,
+          },
+        });
+      }
+    } else if (
       e.target.type === "number" ||
       e.target.type === "text" ||
       e.target.type === "textarea"
@@ -47,10 +64,56 @@ function AddProduct() {
     }
   };
 
-  const handleSubmit = async (event:any) => {
+  const [options, setOptions] = useState<string[]>(["prodSizes", "Colors"]);
+  const [newOption, setNewOption] = useState<string>("");
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+  const [newOptionValue, setNewOptionValue] = useState<string>("");
+
+  const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedOptions([...selectedOptions, event.target.value]);
+  };
+
+  const handleNewOptionValueChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setNewOptionValue(event.target.value);
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewOption(event.target.value);
+  };
+
+  const handleAddOption = (event: React.FormEvent) => {
+    event.preventDefault(); // Prevent form submission
+    if (newOption.trim() !== "" && !options.includes(newOption)) {
+      setOptions([...options, newOption.trim()]);
+      setFormData({
+        ...formData,
+        variants: {
+          ...formData.variants,
+          [newOption.trim()]: newOptionValue, // Update the value for the new option inside variants
+        },
+      });
+      setNewOption("");
+      setNewOptionValue(""); // Reset the value for the new option input
+    }
+  };
+
+  const handleRemoveOption = (
+    optionToRemove: any,
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    event.preventDefault(); // Prevent the default behavior of the button
+    setSelectedOptions(
+      selectedOptions.filter((option) => option !== optionToRemove)
+    );
+  };
+
+  const handleSubmit = async (event: any) => {
     event.preventDefault();
     try {
-      const response = await fetch("/api/create-store", {
+      console.log(JSON.stringify(formData))
+      const response = await fetch("/api/add-products", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -61,11 +124,10 @@ function AddProduct() {
         throw new Error("Failed to create store");
       }
       // Handle successful response
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error creating store:", error.message);
     }
   };
-
 
   return (
     <div className="shadow-md pt-10 pl-6 pr-6">
@@ -84,10 +146,12 @@ function AddProduct() {
             </label>
             <input
               type="text"
+              id="productName"
+              required
               placeholder="Enter product name"
               className="border p-3 rounded-lg"
-              id="name"
-              required
+              onChange={handleChange}
+              value={formData.productName}
             />
           </div>
         </div>
@@ -100,8 +164,10 @@ function AddProduct() {
               type="text"
               placeholder="Enter category name"
               className="border p-3 rounded-lg"
-              id="name"
+              id="prodCategory"
               required
+              onChange={handleChange}
+              value={formData.prodCategory}
             />
           </div>
         </div>
@@ -114,8 +180,10 @@ function AddProduct() {
               type="text"
               placeholder="$ Enter price"
               className="border p-3 rounded-lg"
-              id="name"
+              id="price"
               required
+              onChange={handleChange}
+              value={formData.price}
             />
           </div>
           <div className="flex flex-col gap-2 flex-1">
@@ -126,8 +194,10 @@ function AddProduct() {
               type="text"
               placeholder="$ Enter discounted price"
               className="border p-3 rounded-lg"
-              id="name"
+              id="discountedPrice"
               required
+              onChange={handleChange}
+              value={formData.discountedPrice}
             />
           </div>
         </div>
@@ -136,8 +206,10 @@ function AddProduct() {
           <textarea
             placeholder="Enter product description"
             className="border p-3 rounded-lg h-60"
-            id="name"
+            id="productDescription"
             required
+            onChange={handleChange}
+            value={formData.productDescription}
           />
         </div>
         <h4 className="">Product Media</h4>
@@ -158,7 +230,144 @@ function AddProduct() {
           customers' preferences.
         </p>
 
-        <Variants />
+        <div className="mb-20">
+          <div className="pb-3">
+            <select
+              className="border border-gray-300 rounded-lg p-3"
+              value=""
+              onChange={handleOptionChange}
+            >
+              <option value="">Select an option</option>
+              {options.map((option, index) => (
+                <option
+                  key={index}
+                  value={option}
+                  className="gap-4"
+                  disabled={selectedOptions.includes(option)}
+                >
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="pb-5 flex flex-row gap-3">
+            <div className="relative max-w-60 mt-3">
+              <input
+                type="text"
+                value={newOption}
+                onChange={handleInputChange}
+                placeholder="Create a custom option"
+                className="border-b-2 border-gray-400 focus:outline-none pb-2"
+              />
+            </div>
+            <button
+              className="bg-green-400 p-3 rounded-lg"
+              onClick={handleAddOption}
+            >
+              Add
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-8 pb-10">
+            {selectedOptions.map((selectedOption, index) => (
+              <div key={index} className="flex flex-col">
+                <h4 className="mb-3">{selectedOption}</h4>
+                <div className="flex gap-2">
+                  {selectedOption === "prodSizes" && (
+                    <>
+                      <input
+                        type="checkbox"
+                        id="small"
+                        className="w-5"
+                        onChange={handleChange}
+                        checked={formData.prodSizes.small}
+                      />
+                      <label htmlFor="small" className="mr-4">
+                        Small
+                      </label>
+                      <input
+                        onChange={handleChange}
+                        checked={formData.prodSizes.medium}
+                        type="checkbox"
+                        id="medium"
+                        className="w-5"
+                      />
+                      <label htmlFor="medium" className="mr-4">
+                        Medium
+                      </label>
+                      <input
+                        onChange={handleChange}
+                        checked={formData.prodSizes.large}
+                        type="checkbox"
+                        id="large"
+                        className="w-5"
+                      />
+                      <label htmlFor="large">Large</label>
+                    </>
+                  )}
+                  {selectedOption === "Colors" && (
+                    <>
+                      <input
+                        type="checkbox"
+                        id="red"
+                        className="w-5"
+                        onChange={handleChange}
+                        checked={formData.color.red}
+                      />
+                      <label htmlFor="red" className="mr-4">
+                        Red
+                      </label>
+                      <input
+                        type="checkbox"
+                        id="blue"
+                        className="w-5"
+                        onChange={handleChange}
+                        checked={formData.color.blue}
+                      />
+                      <label htmlFor="blue" className="mr-4">
+                        Blue
+                      </label>
+                      <input
+                        type="checkbox"
+                        id="green"
+                        className="w-5"
+                        onChange={handleChange}
+                        checked={formData.color.green}
+                      />
+                      <label htmlFor="green">Green</label>
+                    </>
+                  )}
+                  {selectedOption !== "prodSizes" &&
+                    selectedOption !== "Colors" && (
+                      <>
+                        <input
+                          type="text"
+                          value={newOptionValue}
+                          onChange={handleNewOptionValueChange}
+                          placeholder="Write the price, length other variants, etc."
+                          className="border-b-2 w-80 border-gray-400 focus:outline-none pb-2"
+                        />
+                      </>
+                    )}
+                  {/* Add more options here as needed */}
+                </div>
+                <button
+                  onClick={(event) => handleRemoveOption(selectedOption, event)}
+                  className="mt-3 px-2 py-1 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+        <Button
+          onClick={(event) => handleSubmit(event)}
+          className={`${buttonVariants({
+            variant: "default",
+          })} h-10 sm:h-12`}
+        >
+          Get Started
+        </Button>
       </form>
     </div>
   );
