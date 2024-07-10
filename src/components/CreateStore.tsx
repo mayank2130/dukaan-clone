@@ -55,7 +55,7 @@ function CreateStore() {
     }
   };
 
-  const handleSubmit = async (event:any) => {
+  const handleSubmit = async (event: any) => {
     event.preventDefault();
     try {
       const response = await fetch("/api/create-store", {
@@ -69,13 +69,13 @@ function CreateStore() {
         throw new Error("Failed to create store");
       }
       // Handle successful response
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error creating store:", error.message);
     }
   };
 
   return (
-    <div className="shadow-md pt-10 pl-6 pr-6">
+    <div className="pt-10 pl-6 pr-6">
       <form onSubmit={handleSubmit}>
         <div>
           <h4 className="font-semibold text-lg">Shop Information</h4>
@@ -175,7 +175,7 @@ function CreateStore() {
         <p className="text-base pb-5 font-normal font-sans text-gray-400">
           Upload captivating images and videos to make your shop stand out.
         </p>
-        <div className="flex-1 flex flex-row gap-10 mb-60 pb-10">
+        <div className="flex-1 flex flex-row gap-10 pb-10">
           <div className="pb-5 flex flex-col gap-2 pt-2 flex-1 border border-gray-300 rounded-lg max-w-36">
             <div className="flex justify-center items-center pt-10 pb-5">
               <Camera size={50} />
