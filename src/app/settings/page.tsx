@@ -93,12 +93,12 @@ const StoreSettings: React.FC = () => {
         </header>
 
         {/* Content area */}
-        <div className="flex-1 overflow-auto">
-          <div className="max-w-7xl py-6 sm:px-6 lg:px-8 flex ">
-            {/* Settings Sidebar */}
-            <div className="bg-white shadow rounded-lg mr-10 h-fit">
-              <nav className="w-64">
-                <ul className="space-y-1 pl-4 p-3">
+        <div className="flex h-screen">
+          {/* Settings Sidebar */}
+          <div className="py-6 sm:px-2 lg:px-4 ml-4">
+            <div className="bg-white w-64 flex-shrink-0 h-fit overflow-y-auto sticky top-0 rounded-sm">
+              <nav className="p-4">
+                <ul className="space-y-1">
                   {settingsItems.map((item) => (
                     <li key={item.name}>
                       <Link
@@ -109,9 +109,9 @@ const StoreSettings: React.FC = () => {
                             : "text-slate-600"
                         }`}
                       >
-                        <div className="flex flex-row items-center gap-3">
+                        <div className="flex items-center gap-3">
                           {item.icons}
-                          <p>{item.name}</p>
+                          <p className="text-sm font-medium">{item.name}</p>
                         </div>
                       </Link>
                     </li>
@@ -119,36 +119,12 @@ const StoreSettings: React.FC = () => {
                 </ul>
               </nav>
             </div>
+          </div>
 
-            {/* Main Settings Content */}
-            <div className="flex-1">
-              <div className="bg-white shadow rounded-lg">
-                <div className="px-4 py-5 sm:p-6">
-                  {renderSectionComponent()}
-                </div>
-              </div>
-              <div className="mt-6 bg-white shadow rounded-lg">
-                <div className="px-4 py-5 sm:p-6">
-                  <h3 className="text-lg font-medium leading-6 text-gray-900">
-                    Developer tools
-                  </h3>
-                  <p className="mt-1 text-sm text-gray-500">
-                    Use the Dukaan APIs to integrate dukaan services in your
-                    apps.{" "}
-                    <a
-                      href="#"
-                      className="text-indigo-600 hover:text-indigo-500"
-                    >
-                      View API docs
-                    </a>
-                  </p>
-                  <div className="mt-4">
-                    <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                      View auth token
-                    </button>
-                  </div>
-                </div>
-              </div>
+          {/* Main Settings Content */}
+          <div className="flex-1 h-screen overflow-y-auto">
+            <div className="py-6 sm:px-6 lg:px-8">
+              {renderSectionComponent()}
             </div>
           </div>
         </div>
