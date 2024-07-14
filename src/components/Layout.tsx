@@ -63,7 +63,7 @@ const Layout = () => {
     <div className="flex h-screen bg-fixed bg-gray-100">
       <div
         className={`${
-          isSidebarOpen ? "w-56" : "w-16"
+          isSidebarOpen ? "w-56" : "w-16 pl-1"
         } bg-gray-900 text-white transition-all duration-300 ease-in-out flex flex-col`}
       >
         <div className="p-4 flex items-center justify-between">
@@ -84,9 +84,15 @@ const Layout = () => {
                 item.name === "Settings" ? "bg-gray-800" : ""
               }`}
             >
-              <div className="items-center flex flow-row gap-2">
+              <div
+                className={`${
+                  isSidebarOpen
+                    ? "items-center flex flow-row gap-2 text-sm font-medium"
+                    : ""
+                }`}
+              >
                 {item.icons}
-                {isSidebarOpen ? item.name : item.name.charAt(0)}
+                {isSidebarOpen ? item.name : null}
               </div>
             </Link>
           ))}
