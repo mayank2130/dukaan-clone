@@ -1,17 +1,7 @@
 import React from "react";
 import { Switch } from "@/components/ui/switch";
 
-interface PaymentProvider {
-  name: string;
-  logo: string;
-  description?: string;
-}
-
-interface PaymentProvidersProps {
-  providers: PaymentProvider[];
-}
-
-const PaymentProviders: React.FC<PaymentProvidersProps> = () => {
+const PaymentProviders= () => {
   const providers = [
     { name: "Razorpay", logo: "/path/to/razorpay-logo.png" },
     { name: "PhonePe Payment Gateway", logo: "/path/to/phonepe-logo.png" },
