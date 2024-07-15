@@ -95,9 +95,9 @@ const StoreSettings: React.FC = () => {
         {/* Content area */}
         <div className="flex h-screen">
           {/* Settings Sidebar */}
-          <div className="py-6 sm:px-2 lg:px-4 ml-4">
+          <div className="py-3 sm:px-2 lg:px-4 ml-4">
             <div className="bg-white w-64 flex-shrink-0 h-fit overflow-y-auto sticky top-0 rounded-sm">
-              <nav className="p-4">
+              <nav className="p-4 ml-2">
                 <ul className="space-y-1">
                   {settingsItems.map((item) => (
                     <li key={item.name}>
@@ -123,7 +123,7 @@ const StoreSettings: React.FC = () => {
 
           {/* Main Settings Content */}
           <div className="flex-1 h-screen overflow-y-auto">
-            <div className="py-6 sm:px-6 lg:px-8">
+            <div className="py-3 sm:px-6 lg:px-8">
               {renderSectionComponent()}
             </div>
           </div>
