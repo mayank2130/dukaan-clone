@@ -49,7 +49,7 @@ const SalesAnalytics = () => {
     { date: "20 Jul", value: 4200 },
   ];
 
-  const AnalyticsCard = ({ title, value, chart = false }) => (
+  const AnalyticsCard = ({ title, value, chart = false }:any) => (
     <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <h3 className="text-sm font-medium">{title}</h3>
@@ -81,8 +81,7 @@ const SalesAnalytics = () => {
     <>
       <div className="bg-gray-100 h-screen">
         <header className="bg-white shadow-sm">
-          <div className="mx-auto py-4  sm:px-6 flex justify-between items-center">
-            <h1 className="text-lg font-semibold">Store settings</h1>
+          <div className="mx-auto py-4  sm:px-6 flex justify-end items-center">
             <div className="flex items-center space-x-4">
               <HelpCircle size={20} />
               <Bell size={20} />
@@ -91,13 +90,13 @@ const SalesAnalytics = () => {
           </div>
         </header>
         <div className="p-6 space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">Sales analytics</h2>
+          <div className="flex gap-4 items-center">
+            <h2 className="text-xl font-semibold">Sales analytics</h2>
             <Select
               value={selectedTimeRange}
               onValueChange={setSelectedTimeRange}
             >
-              <SelectTrigger className="w-[280px]">
+              <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Select a timezone" />
               </SelectTrigger>
               <SelectContent>

@@ -15,10 +15,9 @@ export default function RootLayout({
       <body
         className={cn("relative h-full font-sans antialiased", inter.className)}
       >
-        <main className="relative flex flex-row">
-          {/* <Navbar /> */}
+        <main className="relative flex flex-row h-screen">
           <Layout />
-          <div className="flex-grow flex-1">{children}</div>
+          <div className="flex-grow flex-1 overflow-auto bg-gray-100">{children}</div>
         </main>
       </body>
     </html>

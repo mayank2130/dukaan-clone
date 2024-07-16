@@ -62,7 +62,7 @@ const Layout = () => {
   ];
 
   return (
-    <div className="flex h-screen bg-fixed bg-gray-100">
+    <div className="flex h-screen">
       <div
         className={`${
           isSidebarOpen ? "w-52" : "w-16 pl-1"
