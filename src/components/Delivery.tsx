@@ -12,6 +12,7 @@ import {
 } from "./ui/select";
 import { Label } from "./ui/label";
 import { PlusCircle } from "lucide-react";
+import Image from "next/image";
 
 interface PriceRange {
   start: number;
@@ -77,10 +78,11 @@ const ShippingSettings = () => {
             <div className="mt-3">
               <div className="flex items-center justify-between p-4 rounded-lg">
                 <div className="flex items-center space-x-4">
-                  <img
-                    src="/shiprocket-logo.png"
-                    alt="Shiprocket"
-                    className="w-12 h-12"
+                  <Image
+                    src="/assets/images.png"
+                    alt="return_logo"
+                    width={45}
+                    height={45}
                   />
                   <div>
                     <p className="font-medium mb-1 text-sm">Shiprocket</p>
