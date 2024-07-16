@@ -63,7 +63,7 @@ const Layout = () => {
     <div className="flex h-screen bg-fixed bg-gray-100">
       <div
         className={`${
-          isSidebarOpen ? "w-56" : "w-16 pl-1"
+          isSidebarOpen ? "w-52" : "w-16 pl-1"
         } bg-gray-900 text-white transition-all duration-300 ease-in-out flex flex-col`}
       >
         <div className="p-4 flex items-center justify-between">
@@ -98,7 +98,7 @@ const Layout = () => {
           ))}
         </nav>
         {isSidebarOpen && (
-          <div className="mt-auto p-4">
+          <div className="mt-auto p-2 pb-2">
             <div className="mt-4 flex items-center hover:bg-slate-700 rounded-lg">
               <div className="p-2 mr-3 ml-2">
                 <Gem />
