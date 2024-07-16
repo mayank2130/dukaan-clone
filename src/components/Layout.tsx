@@ -104,8 +104,8 @@ const Layout = () => {
                 <Gem />
               </div>
               <div className="flex flex-col">
-                <span className="font-semibold">Upgrade plan</span>
-                <span className="font-light">Get extra benefits</span>
+                <span className="font-semibold text-sm">Upgrade plan</span>
+                <span className="font-light text-sm text-muted-foreground">Get extra benefits</span>
               </div>
             </div>
             <div className="mt-4 flex items-center bg-slate-700  hover:bg-slate-900 p-1 rounded-lg">
