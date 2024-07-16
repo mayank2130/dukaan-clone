@@ -19,12 +19,14 @@ import {
   Diamond,
   Gem,
 } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+  const currentPath = usePathname();
 
   const sidebarItems = [
     {
@@ -81,7 +83,7 @@ const Layout = () => {
               key={item.name}
               href={item.path}
               className={`flex items-center py-2 px-4 ${
-                item.name === "Settings" ? "bg-gray-800" : ""
+                currentPath === item.path ? "bg-gray-800" : ""
               }`}
             >
               <div
@@ -105,7 +107,9 @@ const Layout = () => {
               </div>
               <div className="flex flex-col">
                 <span className="font-semibold text-sm">Upgrade plan</span>
-                <span className="font-light text-sm text-muted-foreground">Get extra benefits</span>
+                <span className="font-light text-sm text-muted-foreground">
+                  Get extra benefits
+                </span>
               </div>
             </div>
             <div className="mt-4 flex items-center bg-slate-700  hover:bg-slate-900 p-1 rounded-lg">
