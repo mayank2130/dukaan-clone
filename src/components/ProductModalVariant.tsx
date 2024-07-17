@@ -33,7 +33,7 @@ const ProductVariantModal = ({ isOpen, onClose, onAddVariants }: any) => {
   const addVariantValue = (variantIndex: any) => {
     if (currentValue.trim()) {
       const newVariants = [...variants];
-      newVariants[variantIndex].values.push(currentValue.trim());
+      // newVariants[variantIndex].values.push(currentValue.trim());
       setVariants(newVariants);
       setCurrentValue("");
     }

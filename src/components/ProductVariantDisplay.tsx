@@ -38,7 +38,7 @@ const ProductVariantsDisplay = ({ variants, setVariants }) => {
         <h2 className="text-xl font-semibold">Variants</h2>
         <p className="text-sm text-gray-500">
           Customize variants for size, color, and more to cater to all your
-          customers' preferences.
+          customers&apos; preferences.
         </p>
       </div>
 

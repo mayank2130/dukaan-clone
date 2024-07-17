@@ -42,7 +42,7 @@ const StoreDetailsForm = () => {
         <CardHeader>
           <p className="text-sm font-medium">Store Details</p>
           <p className="text-xs text-gray-500">
-            Update and customize your store's information.
+            Update and customize your store&apos;s information.
           </p>
         </CardHeader>
         <CardContent>

@@ -39,7 +39,7 @@ const DomainsComponent: React.FC = () => {
             <div className="flex flex-col">
               <p className="text-sm font-medium">Domains</p>
               <span className="text-xs text-slate-500">
-                Set up and personalize your store's web address.
+                Set up and personalize your store&apos;s web address.
               </span>
             </div>
           </div>
