@@ -1,4 +1,4 @@
-import Store, { IStore } from "../models/store.model";
+import {Store , IStore } from "../models/store.model";
 
 export const checkUserStore = async (
   req: { userId: string },
