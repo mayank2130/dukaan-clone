@@ -1,33 +1,92 @@
-"use client";
-
 import React, { useState } from "react";
-import { Button, buttonVariants } from "./ui/button";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
+import { Button } from "./ui/button";
 import { Switch } from "./ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 interface DayTiming {
   day: string;
   isOpen: boolean;
-  hours: string;
+  startTime: string;
+  endTime: string;
 }
+
+const generateTimeOptions = () => {
+  const options = ["24 hours"];
+  for (let hour = 0; hour < 24; hour++) {
+    for (let minute = 0; minute < 60; minute += 30) {
+      const period = hour < 12 ? "AM" : "PM";
+      const displayHour = hour % 12 || 12;
+      const time = `${displayHour.toString().padStart(2, "0")}:${minute
+        .toString()
+        .padStart(2, "0")} ${period}`;
+      options.push(time);
+    }
+  }
+  return options;
+};
+
+const timeOptions = generateTimeOptions();
+
+const addHours = (time: string, hoursToAdd: number): string => {
+  if (time === "24 hours") return time;
+  const [hourMinute, period] = time.split(" ");
+  const [hour, minute] = hourMinute.split(":").map(Number);
+  let newHour = (hour % 12) + hoursToAdd;
+  let newPeriod = period;
+  if (newHour >= 12) {
+    newPeriod = period === "AM" ? "PM" : "AM";
+    newHour = newHour % 12;
+  }
+  newHour = newHour || 12;
+  return `${newHour.toString().padStart(2, "0")}:${minute
+    .toString()
+    .padStart(2, "0")} ${newPeriod}`;
+};
 
 const StoreTimings: React.FC = () => {
   const [timings, setTimings] = useState<DayTiming[]>([
-    { day: "Sunday", isOpen: true, hours: "24 hours" },
-    { day: "Monday", isOpen: true, hours: "24 hours" },
-    { day: "Tuesday", isOpen: true, hours: "24 hours" },
-    { day: "Wednesday", isOpen: true, hours: "24 hours" },
-    { day: "Thursday", isOpen: true, hours: "24 hours" },
-    { day: "Friday", isOpen: true, hours: "24 hours" },
-    { day: "Saturday", isOpen: true, hours: "24 hours" },
+    { day: "Sunday", isOpen: true, startTime: "24 hours", endTime: "" },
+    { day: "Monday", isOpen: true, startTime: "24 hours", endTime: "" },
+    { day: "Tuesday", isOpen: true, startTime: "24 hours", endTime: "" },
+    { day: "Wednesday", isOpen: true, startTime: "24 hours", endTime: "" },
+    { day: "Thursday", isOpen: true, startTime: "24 hours", endTime: "" },
+    { day: "Friday", isOpen: true, startTime: "24 hours", endTime: "" },
+    { day: "Saturday", isOpen: true, startTime: "24 hours", endTime: "" },
   ]);
 
   const handleToggle = (index: number) => {
     const newTimings = [...timings];
     newTimings[index].isOpen = !newTimings[index].isOpen;
+    if (!newTimings[index].isOpen) {
+      newTimings[index].startTime = "24 hours";
+      newTimings[index].endTime = "";
+    }
     setTimings(newTimings);
   };
+
+  const handleTimeChange = (
+    index: number,
+    type: "startTime" | "endTime",
+    value: string
+  ) => {
+    const newTimings = [...timings];
+    newTimings[index][type] = value;
+    if (type === "startTime") {
+      if (value === "24 hours") {
+        newTimings[index].endTime = "";
+      } else {
+        newTimings[index].endTime = addHours(value, 12);
+      }
+    }
+    setTimings(newTimings);
+  };
+
   return (
     <div className="flex-1">
       <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -41,7 +100,7 @@ const StoreTimings: React.FC = () => {
         {timings.map((timing, index) => (
           <div
             key={timing.day}
-            className="flex items-center justify-between py-2"
+            className="flex items-center justify-between py-1"
           >
             <div className="flex items-center space-x-6">
               <span className="w-24 text-sm">{timing.day}</span>
@@ -50,25 +109,55 @@ const StoreTimings: React.FC = () => {
                 onCheckedChange={() => handleToggle(index)}
               />
               <span className="text-gray-500 w-16">
-                {timing.isOpen ? "Open" : "Closed"}
-              </span>
-              <div className="w-24 h-9">
-                {" "}
-                {/* Placeholder div to maintain layout */}
                 {timing.isOpen ? (
-                  <Button
-                    className={cn([
-                      buttonVariants({
-                        variant: "outline",
-                        className: "bg-white",
-                      }),
-                      "hover:bg-gray-100 border",
-                    ])}
+                  <p className="text-sm text-muted-foreground">Open</p>
+                ) : (
+                  "Closed"
+                )}
+              </span>
+              {timing.isOpen && (
+                <>
+                  <Select
+                    value={timing.startTime}
+                    onValueChange={(value) =>
+                      handleTimeChange(index, "startTime", value)
+                    }
                   >
-                    <p className="text-zinc-600">{timing.hours}</p>
-                  </Button>
-                ) : null}
-              </div>
+                    <SelectTrigger className="w-[110px]">
+                      <SelectValue placeholder="Start time" />
+                    </SelectTrigger>
+                    <SelectContent className="h-[160px] overflow-auto">
+                      {timeOptions.map((time) => (
+                        <SelectItem key={time} value={time}>
+                          {time}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {timing.startTime !== "24 hours" && (
+                    <>
+                      <span>-</span>
+                      <Select
+                        value={timing.endTime}
+                        onValueChange={(value) =>
+                          handleTimeChange(index, "endTime", value)
+                        }
+                      >
+                        <SelectTrigger className="w-[140px]">
+                          <SelectValue placeholder="End time" />
+                        </SelectTrigger>
+                        <SelectContent className="h-[160px] overflow-auto">
+                          {timeOptions.slice(1).map((time) => (
+                            <SelectItem key={time} value={time}>
+                              {time}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </>
+                  )}
+                </>
+              )}
             </div>
           </div>
         ))}
