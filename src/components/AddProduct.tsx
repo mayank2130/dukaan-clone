@@ -1,8 +1,25 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
-import { ChevronDown, ChevronUp, Camera } from "lucide-react";
+import { ChevronDown, ChevronUp, Camera, Loader2 } from "lucide-react";
 import { Button, buttonVariants } from "./ui/button";
-import Link from "next/link";
+import {
+  Bold,
+  Italic,
+  Underline,
+  Link,
+  Image,
+  Table,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  List,
+  ListOrdered,
+  Quote,
+  Code,
+  Maximize2,
+} from "lucide-react";
+import { HfInference, textGeneration } from "@huggingface/inference";
+import { Textarea } from "./ui/textarea";
 
 interface Section {
   id: string;
@@ -10,6 +27,7 @@ interface Section {
   des: string;
   content: React.ReactNode;
 }
+const hf = new HfInference("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");
 
 const ProductManagementPage: React.FC = () => {
   const [openSections, setOpenSections] = useState<Set<string>>(new Set());
@@ -17,10 +35,14 @@ const ProductManagementPage: React.FC = () => {
     [key: string]: React.RefObject<HTMLDivElement>;
   }>({});
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const [description, setDescription] = useState("");
   const [formData, setFormData] = useState({
     productName: "",
     clerkUserId: "",
-    productDescription: "",
+    productDescription: description,
     gstinNum: "",
     price: "",
     discountedPrice: "",
@@ -31,11 +53,6 @@ const ProductManagementPage: React.FC = () => {
     variants: {},
     prodCategory: "",
   });
-
-  const [options, setOptions] = useState<string[]>(["prodSizes", "Colors"]);
-  const [newOption, setNewOption] = useState<string>("");
-  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
-  const [newOptionValue, setNewOptionValue] = useState<string>("");
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -59,66 +76,64 @@ const ProductManagementPage: React.FC = () => {
     }
   };
 
-  const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedOptions((prev) => [...prev, event.target.value]);
-  };
-
-  const handleNewOptionValueChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setNewOptionValue(event.target.value);
-  };
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewOption(event.target.value);
-  };
-
-  const handleAddOption = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (newOption.trim() !== "" && !options.includes(newOption)) {
-      setOptions((prev) => [...prev, newOption.trim()]);
-      setFormData((prev) => ({
-        ...prev,
-        variants: {
-          ...prev.variants,
-          [newOption.trim()]: newOptionValue,
+    try {
+      console.log(JSON.stringify(formData));
+      const response = await fetch("/api/add-products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      }));
-      setNewOption("");
-      setNewOptionValue("");
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to create product");
+      }
+      // Handle successful response
+    } catch (error: any) {
+      console.error("Error creating product:", error.message);
     }
   };
 
-  const handleRemoveOption = (
-    optionToRemove: string,
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
+  const prompt = `Generate product descriptions based on the product name focus on Features:
+  🌟 Classic Design:,\n Color:, \nFitting:,\n Styling:,\nQuality:,\n START CONTEXT BLOCK
+  ${formData.productName}
+  END OF CONTEXT BLOCK
+  AI:`;
+  const generateResponse = async (event: React.FormEvent) => {
     event.preventDefault();
-    setSelectedOptions((prev) =>
-      prev.filter((option) => option !== optionToRemove)
-    );
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const response = await hf.textGeneration({
+        model: "mistralai/Mistral-7B-Instruct-v0.2",
+        inputs: prompt,
+        parameters: {
+          max_new_tokens: 150,
+          temperature: 0.7,
+          top_p: 0.95,
+          repetition_penalty: 1.2,
+        },
+      });
+
+      const fullResponse = response.generated_text;
+      const aiMessage =
+        fullResponse.split("AI:")[1]?.split("Human:")[0]?.trim() ||
+        fullResponse;
+      const savedMessage = aiMessage.replace(/\./g, ".\n\n");
+      setDescription(savedMessage);
+      console.log(response);
+    } catch (err) {
+      console.error("Error generating response:", err);
+      setError(
+        "An error occurred while generating the response. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
-
-  // const handleSubmit = async (event: React.FormEvent) => {
-  //   event.preventDefault();
-  //   try {
-  //     console.log(JSON.stringify(formData));
-  //     const response = await fetch("/api/add-products", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(formData),
-  //     });
-  //     if (!response.ok) {
-  //       throw new Error("Failed to create product");
-  //     }
-  //     // Handle successful response
-  //   } catch (error: any) {
-  //     console.error("Error creating product:", error.message);
-  //   }
-  // };
-
   const sections: Section[] = [
     {
       id: "product-information",
@@ -126,6 +141,11 @@ const ProductManagementPage: React.FC = () => {
       des: "Easily input essential details like name, price, and more to showcase your product.",
       content: (
         <div>
+          {isLoading && (
+            <div className="absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+            </div>
+          )}
           <div className="pb-5">
             <div className="flex flex-col gap-2 flex-1">
               <label className="text-sm">
@@ -191,16 +211,82 @@ const ProductManagementPage: React.FC = () => {
               />
             </div>
           </div>
-          <h4 className="text-sm">Product Description</h4>
+          <h4 className="text-sm pb-1">Product Description</h4>
+          <p className="text-xs text-muted-foreground font-normal">
+            Get high quality product descriptions within seconds!{" "}
+            <button
+              className="bg-none underline text-blue-600"
+              onClick={(event) => generateResponse(event)}
+            >
+              Get description.
+            </button>
+          </p>
           <div className="pb-5 flex flex-col gap-2 pt-2 flex-1">
-            <textarea
+            {/* <textarea
               placeholder="Enter product description"
               className="border p-3 rounded-lg h-60"
               id="productDescription"
               required
               onChange={handleChange}
               value={formData.productDescription}
-            />
+            /> */}
+            <div className="flex-1">
+              <div className="border rounded-lg shadow-sm">
+                <div className="flex items-center space-x-2 p-2 border-b">
+                  <select className="border rounded px-4 py-1 bg-gray-100">
+                    <option className="text-sm">Paragraph</option>
+                  </select>
+                  <Button variant="ghost" size="icon">
+                    <Bold size={20} />
+                  </Button>
+                  <Button variant="ghost" size="icon">
+                    <Italic size={20} />
+                  </Button>
+                  <Button variant="ghost" size="icon">
+                    <Underline size={20} />
+                  </Button>
+                  <Button variant="ghost" size="icon">
+                    <Link size={20} />
+                  </Button>
+                  <Button variant="ghost" size="icon">
+                    <Image size={20} />
+                  </Button>
+                  <Button variant="ghost" size="icon">
+                    <Table size={20} />
+                  </Button>
+                  <Button variant="ghost" size="icon">
+                    <AlignLeft size={20} />
+                  </Button>
+                  <Button variant="ghost" size="icon">
+                    <AlignCenter size={20} />
+                  </Button>
+                  <Button variant="ghost" size="icon">
+                    <AlignRight size={20} />
+                  </Button>
+                  <Button variant="ghost" size="icon">
+                    <List size={20} />
+                  </Button>
+                  <Button variant="ghost" size="icon">
+                    <ListOrdered size={20} />
+                  </Button>
+                  <Button variant="ghost" size="icon">
+                    <Quote size={20} />
+                  </Button>
+                  <Button variant="ghost" size="icon">
+                    <Code size={20} />
+                  </Button>
+                  <Button variant="ghost" size="icon">
+                    <Maximize2 size={20} />
+                  </Button>
+                </div>
+                <Textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full h-96 p-4 border-none focus:ring-0"
+                  placeholder="Enter your privacy policy here..."
+                />
+              </div>
+            </div>
           </div>
         </div>
       ),
@@ -336,141 +422,10 @@ const ProductManagementPage: React.FC = () => {
       customers' preferences. `,
       content: (
         <div>
-          <h4 className="pt-5">Add Variant</h4>
-          <p className="text-base pb-5 font-normal font-sans text-gray-400">
-            Customize variants for size, color, and more to cater to all your
-            customers' preferences.
-          </p>
-          <div className="mb-20">
-            <div className="pb-3">
-              <select
-                className="border border-gray-300 rounded-lg p-3"
-                value=""
-                onChange={handleOptionChange}
-              >
-                <option value="">Select an option</option>
-                {options.map((option, index) => (
-                  <option
-                    key={index}
-                    value={option}
-                    className="gap-4"
-                    disabled={selectedOptions.includes(option)}
-                  >
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="pb-5 flex flex-row gap-3">
-              <div className="relative max-w-60 mt-3">
-                <input
-                  type="text"
-                  value={newOption}
-                  onChange={handleInputChange}
-                  placeholder="Create a custom option"
-                  className="border-b-2 border-gray-400 focus:outline-none pb-2"
-                />
-              </div>
-              <button
-                className="bg-green-400 p-3 rounded-lg"
-                onClick={handleAddOption}
-              >
-                Add
-              </button>
-            </div>
-            <div className="flex flex-wrap gap-8 pb-10">
-              {selectedOptions.map((selectedOption, index) => (
-                <div key={index} className="flex flex-col">
-                  <h4 className="mb-3">{selectedOption}</h4>
-                  <div className="flex gap-2">
-                    {selectedOption === "prodSizes" && (
-                      <>
-                        <input
-                          type="checkbox"
-                          id="small"
-                          className="w-5"
-                          onChange={handleChange}
-                          checked={formData.prodSizes.small}
-                        />
-                        <label htmlFor="small" className="mr-4">
-                          Small
-                        </label>
-                        <input
-                          onChange={handleChange}
-                          checked={formData.prodSizes.medium}
-                          type="checkbox"
-                          id="medium"
-                          className="w-5"
-                        />
-                        <label htmlFor="medium" className="mr-4">
-                          Medium
-                        </label>
-                        <input
-                          onChange={handleChange}
-                          checked={formData.prodSizes.large}
-                          type="checkbox"
-                          id="large"
-                          className="w-5"
-                        />
-                        <label htmlFor="large">Large</label>
-                      </>
-                    )}
-                    {selectedOption === "Colors" && (
-                      <>
-                        <input
-                          type="checkbox"
-                          id="red"
-                          className="w-5"
-                          onChange={handleChange}
-                          checked={formData.color.red}
-                        />
-                        <label htmlFor="red" className="mr-4">
-                          Red
-                        </label>
-                        <input
-                          type="checkbox"
-                          id="blue"
-                          className="w-5"
-                          onChange={handleChange}
-                          checked={formData.color.blue}
-                        />
-                        <label htmlFor="blue" className="mr-4">
-                          Blue
-                        </label>
-                        <input
-                          type="checkbox"
-                          id="green"
-                          className="w-5"
-                          onChange={handleChange}
-                          checked={formData.color.green}
-                        />
-                        <label htmlFor="green">Green</label>
-                      </>
-                    )}
-                    {selectedOption !== "prodSizes" &&
-                      selectedOption !== "Colors" && (
-                        <>
-                          <input
-                            type="text"
-                            value={newOptionValue}
-                            onChange={handleNewOptionValueChange}
-                            placeholder="Write the price, length other variants, etc."
-                            className="border-b-2 w-80 border-gray-400 focus:outline-none pb-2"
-                          />
-                        </>
-                      )}
-                  </div>
-                  <button
-                    onClick={(event) =>
-                      handleRemoveOption(selectedOption, event)
-                    }
-                    className="mt-3 px-2 py-1 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
-            </div>
+          <div className="flex justify-center items-center">
+            <Button className={buttonVariants({ variant: "outline" })}>
+              <p className="text-muted-foreground">+ Add variant</p>
+            </Button>
           </div>
         </div>
       ),
@@ -544,7 +499,7 @@ const ProductManagementPage: React.FC = () => {
           <div className="flex-1 h-screen overflow-y-auto pb-20">
             <div className="py-3 sm:px-6 lg:px-8">
               <div className="rounded-sm w-full">
-                <form>
+                <form onSubmit={handleSubmit}>
                   {sections.map((section) => (
                     <div
                       key={section.id}

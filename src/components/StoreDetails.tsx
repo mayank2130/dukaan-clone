@@ -13,7 +13,7 @@ import Link from "next/link";
 
 const StoreDetailsForm = () => {
   const [storeLink, setStoreLink] = useState("mydukaan.io/ topg");
-  const [storeName, setStoreName] = useState("TOP G");
+  const [storeName, setStoreName] = useState("Cozy Corner");
   const [mobileNumber, setMobileNumber] = useState("+910123456789");
   const [emailAddress, setEmailAddress] = useState(
     "mayankthakur1712@gmail.com"

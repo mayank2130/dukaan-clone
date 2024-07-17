@@ -52,7 +52,7 @@ const Layout = () => {
     },
     { name: "Orders", path: "/orders", icons: <ClipboardList /> },
     { name: "Delivery", path: "/delivery", icons: <Truck /> },
-    { name: "Products", path: "/products", icons: <Grid2X2 /> },
+    { name: "Products", path: "/add-products", icons: <Grid2X2 /> },
     { name: "Analytics", path: "/analytics", icons: <BarChart4 /> },
     { name: "Discounts", path: "/discounts", icons: <BadgePercent /> },
     { name: "Audience", path: "/audience", icons: <Users /> },
@@ -69,7 +69,7 @@ const Layout = () => {
         } bg-gray-900 text-white transition-all duration-300 ease-in-out flex flex-col`}
       >
         <div className="p-4 flex items-center justify-between">
-          {isSidebarOpen && <span className="font-bold text-xl">TOP G</span>}
+          {isSidebarOpen && <span className="font-bold text-xl">Cozy Corner</span>}
           <button
             onClick={toggleSidebar}
             className="text-white focus:outline-none"
