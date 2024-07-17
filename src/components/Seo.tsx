@@ -67,7 +67,7 @@ const SEOSettings = () => {
               <span className="text-sm text-slate-500">
                 When you share a link to your store on social media, an image is
                 usually shown in your post. This one will be used if another
-                relevant image can&apos;t be found.
+                relevant image cant be found.
               </span>
             </div>
             <Card className="border shadow-none">
@@ -104,7 +104,7 @@ const SEOSettings = () => {
               <p className="font-medium">Sitemap</p>
               <p className="text-sm text-slate-500">
                 Sitemap.xml is used by search engines like Google and Bing to
-                index your site so that your store&apos;s pages appear in search
+                index your site so that your stores pages appear in search
                 results.
               </p>
             </div>
